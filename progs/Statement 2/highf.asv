@@ -1,0 +1,40 @@
+function [ P2 ] = highf(hfile,framesize,len,no_of_frames);
+[Y1, Fs] = wavread(hfile,len);
+
+for i=1:(no_of_frames*framesize);
+    B(i)=Y1(i);
+end
+
+Z=reshape(B,framesize,no_of_frames);
+dft_of_Z=fft(Z);
+C=abs(dft_of_Z);                          %C stores abs val of dft of matrix
+a=1;
+for s=1:no_of_frames;                           %find maximum value in one column
+    maxC(a)=max(C(:,s));
+    a=a+1;
+end
+P=zeros(1,no_of_frames);
+for s=1:no_of_frames;                           %get index of maximum value disregarding 1st value(dc value)        
+    for t=2:(framesize/2);
+        if maxC(s)==C(t,s);
+            P(s)=t;
+        end
+    end
+end
+
+%thresh_val=max(P)/10;                     % set threshold on min value(of index)
+%n=1;                                      % to be considered
+%for i=1:length(P);                        % if for one sample, min index is 2 and 
+ %   if P(i)<=thresh_val                   % and max is 144. i want threshold at 1/10th
+  %      continue;                         % of max value. then only index > 14.4
+   % else                                  % will be considered
+    %    P_thresh(n)=P(i);
+     %   n=n+1;
+  %  end
+%end
+
+%col=length(P_thresh);
+P2=zeros(1,col);
+for i=1:col;
+    P2(1,i)=P(i)*Fs/framesize;
+end

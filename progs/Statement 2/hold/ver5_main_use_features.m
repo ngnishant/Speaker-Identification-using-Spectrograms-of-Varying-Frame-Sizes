@@ -1,0 +1,157 @@
+
+clear all
+clc
+tic
+overlap_list=[0,0.25,0.5,0.75];
+
+for overlap_loop=1:4;
+   
+noise_threshold=0.01;
+nof_consec_zeros=10;
+fs=8000;
+framesize=1024;
+overlap_amt=(overlap_list(overlap_loop))*framesize;
+filelist=ls('*.wav');
+len_flist=length(filelist);
+duration_new=zeros(len_flist,1);
+
+for i=1:len_flist
+    hfile=filelist(i,:);
+    [BB fs1]=wavread(hfile);
+    y=del_consec_zeros2(BB,noise_threshold,nof_consec_zeros);
+    duration_old=length(y)/fs1;
+    duration_new(i,1)=duration_old-(framesize/fs1);
+end
+min_new_duration=min(duration_new);
+len=floor(min_new_duration*fs);              !
+
+no_of_frames=floor(len/framesize);
+
+for i=1:len_flist
+    hfile=filelist(i,:);    
+    [mean_freq(i,:) variance_freq(i,:) kurtosis_freq(i,:) skewness_freq(i,:)]=ver5_get_features(hfile,framesize,no_of_frames,overlap_amt,noise_threshold,nof_consec_zeros);
+end   
+    
+all_features_mf=mean_freq;
+all_features_vf=variance_freq;
+all_features_kf=kurtosis_freq;
+all_features_sf=skewness_freq;
+[nof_feat_row nof_feat_col]=size(all_features_mf);
+features_4_mf=zeros((nof_feat_row*4/5),nof_feat_col);
+features_4_vf=zeros((nof_feat_row*4/5),nof_feat_col);
+features_4_kf=zeros((nof_feat_row*4/5),nof_feat_col);
+features_4_sf=zeros((nof_feat_row*4/5),nof_feat_col);
+
+n=1;
+for i=1:nof_feat_row;                                %get feature vectors matrix of excluding test vectors
+        if mod(i,5)==0
+            i=i+1;
+            if i>nof_feat_row
+                break
+            end            
+        features_4_mf(n,:)=all_features_mf(i,:);
+        features_4_vf(n,:)=all_features_vf(i,:);
+        features_4_kf(n,:)=all_features_kf(i,:);
+        features_4_sf(n,:)=all_features_sf(i,:);
+        else
+        features_4_mf(n,:)=all_features_mf(i,:); 
+        features_4_vf(n,:)=all_features_vf(i,:);
+        features_4_kf(n,:)=all_features_kf(i,:);
+        features_4_sf(n,:)=all_features_sf(i,:);
+        n=n+1;       
+        end        
+end
+features_4=horzcat(features_4_vf,features_4_kf);%,features_4_sf);%,features_4_sf);
+
+[nof_f4_row nof_f4_col]=size(features_4);
+test_feature_mf=zeros(nof_feat_row/5,nof_feat_col);                        %ff=fundamental freq,mf = mean freq
+test_feature_vf=zeros(nof_feat_row/5,nof_feat_col);
+test_feature_kf=zeros(nof_feat_row/5,nof_feat_col);
+test_feature_sf=zeros(nof_feat_row/5,nof_feat_col);
+
+
+for i=1:len_flist;                                   %get test feature vectors
+    for j=1:nof_feat_col;
+        if mod(i,5)==0
+            test_feature_mf(i/5,j)=all_features_mf(i,j);
+            test_feature_vf(i/5,j)=all_features_vf(i,j);
+            test_feature_kf(i/5,j)=all_features_kf(i,j);
+            test_feature_sf(i/5,j)=all_features_sf(i,j);
+        end              
+    end    
+end
+test_feature=horzcat(test_feature_vf,test_feature_kf);%,test_feature_sf);%,test_feature_sf);
+
+[nof_tstf_row nof_tst_col]=size(test_feature);
+
+
+
+%%~~~~~~~~~~~~~~~~~~~EUCLIDEAN DISTANCE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+euclidist=euclidean_distanceV2(features_4,test_feature);
+
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+%%~~~~~~~~~~~~~~~~~~~~EFFICIENCY BASED ON MIN DISTANCE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[eurow eucol]=size(euclidist);
+min_dist_is=zeros(1,nof_tstf_row);
+min_dist_at=zeros(1,nof_tstf_row);
+
+
+for i=1:nof_tstf_row;                         %get the min distance
+    min_dist_is(1,i)=min(euclidist(:,i));
+end
+
+
+for j=1:eucol;                                %get index of min dist
+    for i=1:eurow;
+        if min_dist_is(1,j)==euclidist(i,j);
+            min_dist_at(1,j)=i;
+        end
+    end
+end
+
+nof_min_match=0;
+
+for j=1:eucol;
+    for i=1:eurow;
+        if mod(i,4*j)==0;
+            if min_dist_is(1,j)==min(euclidist((i-3):i,j));
+                nof_min_match=nof_min_match+1;
+                %continue;
+            end
+            continue;
+        end
+    end
+end
+
+efficiency=100*nof_min_match/eucol;
+
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~EFFCIENCY BASED ON 2 OUT OF 5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+count_2of5=0;
+[ index_match_2of5, min_val_2of5, indexof_min_val_2of5 ] = try3_2_out_of_5(euclidist);
+for i2=1:eucol;
+    if index_match_2of5(1,i2)
+        count_2of5=count_2of5+1;
+    end
+end
+
+efficiency_2of5=(count_2of5/eucol)*100;
+
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+eff_min(overlap_loop)=efficiency;
+eff_2outof5(overlap_loop)=efficiency_2of5;
+
+end
+
+toc

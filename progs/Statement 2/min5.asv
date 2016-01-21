@@ -1,0 +1,28 @@
+clear all
+clc
+b= [ 181 222 352 4 57 614 7 8 90 6 11 12 13 14 15 16 17 ];
+a=1;
+count=0;
+nof=5;
+for i=1:nof
+    c=sort(b);
+    c2(a)=min()
+    
+    
+    
+    
+    mini=b(i);
+    mini_b=min(b);
+    if mini==mini_b
+        b2(a)=mini;
+        b3(a)=i;
+        count=1;
+        a=a+1;
+        b(i)=max(b)+1;
+    end   
+    if count==1
+        if length(b2)==5
+            break;
+        end
+    end
+end

@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+	<link href="About_EER_files/styles.css" rel="styleSheet" type="text/css">
+    <title>About FAR, FRR and EER</title>
+    <script src="About_EER_files/BioIDscripts.js"></script>
+<style>
+<!--
+  div.WebHelpPopupMenu {position:absolute; left:0px; top:0px; z-index:4; visibility:hidden;}
+  p.WebHelpNavBar {text-align:right;}
+-->
+</style>
+<script src="About_EER_files/bsscnbar_002.js" language="JavaScript" title="WebHelpNavBarExtJs">
+</script>
+<style>
+<!--
+  div.WebHelpPopupMenu {position:absolute; left:0px; top:0px; z-index:4; visibility:hidden;}
+  p.WebHelpNavBar {text-align:right;}
+-->
+</style>
+<script src="About_EER_files/bsscnbar.js" language="JavaScript" title="WebHelpNavBarExtJs">
+</script>
+</head>
+
+<body>
+
+
+
+<!--begin of title-->
+<script language="JavaScript">printHeader()</script><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td width="100%" align="left"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td style="width: 100px;" bgcolor="#000099" nowrap="nowrap" width="100"><img alt="BioID" src="About_EER_files/BioID_inv.gif" border="0" height="34" width="100"></td><td class="header" bgcolor="#000099" nowrap="nowrap">&nbsp;</td><td style="width: 75px;" bgcolor="#000099" nowrap="nowrap" width="75"><img alt=" " src="About_EER_files/Maennchen.gif" border="0" height="34" width="75"></td><td style="width: 206px;" nowrap="nowrap" width="206"><img alt="HumanScan" src="About_EER_files/HumanScan.gif" border="0" height="34" width="206"></td></tr></tbody></table></td></tr><tr><td style="padding-left: 10mm; padding-right: 5mm;" valign="top"><br><h1>About FAR, FRR and EER</h1>
+<!--end of title-->
+
+<p>This chapter discusses some general principles of biometric recognition 
+ systems, describes different classification errors and explains how the 
+ quality of two systems can be compared objectively.</p>
+
+<h3>Identification vs. Verification</h3>
+
+<p>A biometric recognition system can run in two different modes: identification 
+ or verification. Identification is the process of trying to find out a 
+ person's identity by examining a biometric pattern calculated from the 
+ person's biometric features.</p>
+
+<p>In the identification case, the system is trained with the patterns 
+ of several persons. For each of the persons, a biometric template is calculated 
+ in this training stage. A pattern that is going to be identified is matched 
+ against every known template, yielding either a score or a distance describing 
+ the similarity between the pattern and the template. The system assigns 
+ the pattern to the person with the most similar biometric template. To 
+ prevent impostor patterns (in this case all patterns of persons not known 
+ by the system) from being correctly identified, the similarity has to 
+ exceed a certain level. If this level is not reached, the pattern is rejected.</p>
+
+<p>In the verification case, a person's identity is claimed a priori. The 
+ pattern that is verified only is compared with the person's individual 
+ template. Similar to identification, it is checked whether the similarity 
+ between pattern and template is sufficient to provide access to the secured 
+ system or area.</p>
+
+<h3>Thresholding (False Acceptance / False Rejection)</h3>
+
+<p>BioID uses scores (also called weights) to express the similarity between 
+ a pattern and a biometric template. The higher the score is, the higher 
+ is the similarity between them. As described in the preceding section, 
+ access to the system is granted only, if the score for a trained person 
+ (identification) or the person that the pattern is verified against (verification) 
+ is higher than a certain threshold.</p>
+
+<p>In theory, client scores (scores of patterns from persons known by the 
+ system) should always be higher than the scores of impostors. If this 
+ would be true, a single threshold, that separates the two groups of scores, 
+ could be used to differ between clients and impostors.</p>
+
+<p>Due to several reasons, this assumption isn't true for real world biometric 
+ systems. In some cases impostor patterns generate scores that are higher 
+ than the scores of some client patterns. For that reason it is a fact, 
+ that however the classification threshold is chosen, some classification 
+ errors occur.</p>
+
+<p>For example you can choose the threshold such high, that really no impostor 
+ scores will exceed this limit. As a result, no patterns are falsely accepted 
+ by the system. On the other hand the client patterns with scores lower 
+ than the highest impostor scores are falsely rejected. In opposition to 
+ this, you can choose the threshold such low, that no client patterns are 
+ falsely rejected. Then, on the other hand, some impostor patterns are 
+ falsely accepted. If you choose the threshold somewhere between those 
+ two points, both false rejections and false acceptances occur.</p>
+
+<p>The following figures should help to achieve a better understanding 
+ of this topic. Think of a biometric verification system, which is tested 
+ with a large amount of test data. The test data consists of both impostor 
+ and client patterns. Let's first take a look at the impostor patterns. 
+ The belonging scores would be somehow distributed around a certain mean 
+ score. This is depicted in the first image on the left side. A gaussian 
+ normal distribution is chosen in this example.</p>
+
+<p>Depending on the choice of the classification threshold, between all 
+ and none of the impostor patterns are falsely accepted by the system. 
+ The threshold depending fraction of the falsely accepted patterns divided 
+ by the number of all impostor patterns is called <b>False Acceptance Rate 
+ (FAR)</b>. Its value is one, if all impostor patterns are falsely accepted 
+ and zero, if none of the impostor patterns is accepted. Look on the graphic 
+ on the right to see the values of the FAR for the score distribution of 
+ the left image for varying threshold.</p>
+
+<p style="text-align: center;" align="center">
+<img src="About_EER_files/EER_imp.gif" style="width: 643px; height: 169px;" border="0" height="169" width="643"></p>
+
+<p>Now let's change to the client patterns. Similar to the impostor scores, 
+ the client pattern's scores vary around a certain mean value. The 
+ mean score of the client patterns is higher than the mean value of the 
+ impostor patterns, as shown in the left of the following two images. If 
+ a classification threshold that is too high is applied to the classification 
+ scores, some of the client patterns are falsely rejected. Depending on 
+ the value of the threshold, between none and all of the client patterns 
+ will be falsely rejected. The fraction of the number of rejected client 
+ patterns divided by the total number of client patterns is called <b>False 
+ Rejection Rate (FRR)</b>. According to the FAR, its value lies in between 
+ zero and one. The image on the right shows the FAR for a varying threshold 
+ for the score distribution shown in the image on the left.</p>
+
+<p style="text-align: center;" align="center">
+<img src="About_EER_files/EER_client.gif" style="width: 666px; height: 198px;" border="0" height="198" width="666"></p>
+
+<p>The choice of the threshold value becomes a problem if the distributions 
+ of the client and the impostor scores overlap, as shown in the next image 
+ on the left. On the right, the corresponding false acceptance and false 
+ rejection rates are displayed.</p>
+
+<p style="text-align: center;" align="center">
+<img src="About_EER_files/EER_all.gif" style="width: 666px; height: 198px;" border="0" height="198" width="666"> </p>
+
+<p>Note that if the score distributions overlap, the FAR and FRR intersect 
+ at a certain point. The value of the FAR and the FRR at this point, which 
+ is of course the same for both of them, is called the <b>Equal Error Rate 
+ (EER)</b>.</p>
+
+<h3>Comparing biometric systems</h3>
+
+<p>Imagine the comparison of two biometric systems. The manufacturers of 
+ the systems just specify a single value for the FARs of them. Is this 
+ sufficient to compare both systems? The answer clearly is no, if the manufacturers 
+ do not provide the corresponding FRRs. In this case, it is possible that 
+ the system with the lower FAR has got an unacceptable high FRR.</p>
+
+<p>But also when the values for FAR and FRR are given, there still exists 
+ the problem, that those values are threshold depending. Assuming that 
+ the threshold of the systems is adjustable, there is no reasonable way 
+ to decide if a system with a higher FAR and a lower FRR performs better 
+ than a system with a lower FAR and a higher FRR value.</p>
+
+<p>The EER of a system can be used to give a threshold independent performance 
+ measure. The lower the EER is, the better is the system's performance, 
+ as the total error rate which is the sum of the FAR and the FRR at the 
+ point of the EER decreases. In theory this works fine, if the EER of the 
+ system is calculated using an infinite and representative test set, which 
+ of course is not possible under real world conditions. To get comparable 
+ results it is therefore necessary that the EERs that are compared are 
+ calculated on the same test data using the same test protocol.</p>
+
+<p>Some effort is done to achieve large and publicly available test sets 
+ and protocols like the FERET and the XM2VTS databases for face recognition 
+ evaluation. But even if there exist some of those test sets for single 
+ biometric modalities, it still is very hard to compare systems relying 
+ on different ones (e.g. face and fingerprint).</p>
+
+<!--begin of footer-->
+<script language="JavaScript">printFooter()</script><br></td></tr></tbody></table><hr style="COLOR: #000099" width="100%"><div class="footer" align="center">BioID Version 3.10 (build 1250), 03/03/2004<br>Send&nbsp;feedback&nbsp;to&nbsp;<a href="mailto:support@humanscan.de?Subject=BioID%20Reference%20Feedback">support@humanscan.de</a><br>Copyright&nbsp;©&nbsp;2004&nbsp;<a href="http://www.humanscan.de/" target="_blank">HumanScan&nbsp;GmbH</a><br><br></div> 
+<!--end of footer-->
+
+<script language="JavaScript">
+<!--
+gbstrRelHomePageURL="BioID.htm";
+if ((parseInt(navigator.appVersion) >= 3) && (typeof(onBsscAutoSync) != "undefined") && (window.name.indexOf("BSSCPopup") == -1))
+	onBsscAutoSync();
+//-->
+</script>
+<script language="JavaScript">
+<!--
+gbstrRelHomePageURL="BioID.htm";
+if ((parseInt(navigator.appVersion) >= 3) && (typeof(onBsscAutoSync) != "undefined") && (window.name.indexOf("BSSCPopup") == -1))
+	onBsscAutoSync();
+//-->
+</script>
+
+
+</body></html>
